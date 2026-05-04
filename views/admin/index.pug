@@ -1,0 +1,15 @@
+extends ../layout
+block content
+  .page-header
+    h1 Администрирование
+
+  .admin-grid
+    a.admin-card(href="/accounts")
+      h3 Учётные записи
+      p Управление пользователями системы, назначение ролей
+    a.admin-card(href="/departments")
+      h3 Отделы
+      p Управление структурой организации
+    a.admin-card(href="/positions")
+      h3 Должности
+      p Справочник должностей

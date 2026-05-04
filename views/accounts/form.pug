@@ -1,0 +1,25 @@
+extends ../layout
+block content
+  .page-header
+    h1= title
+    a.btn.btn-secondary(href="/accounts") ← Назад
+
+  form.edit-form(action="/accounts" method="post")
+    .form-group
+      label Логин *
+      input(type="text" name="login" required placeholder="ivanov")
+    .form-group
+      label Сотрудник *
+      select(name="id_employee" required)
+        option(value="") — Выберите сотрудника —
+        each e in employees
+          option(value=e.id_employee)= e.full_name + ' (' + e.personnel_number + ')'
+    .form-group
+      label Роль *
+      select(name="id_role" required)
+        each r in roles
+          option(value=r.id_role)= r.role_name
+    p.hint Временный пароль будет сгенерирован автоматически и показан после создания.
+    .form-actions
+      button.btn.btn-primary(type="submit") Создать
+      a.btn.btn-secondary(href="/accounts") Отмена

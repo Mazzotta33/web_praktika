@@ -1,0 +1,26 @@
+extends ../layout
+block content
+  .page-header
+    h1 Отделы
+    if user.role === 'Администратор' || user.role === 'Модератор'
+      a.btn.btn-primary(href="/departments/new") + Добавить отдел
+
+  if departments.length
+    table.data-table
+      thead
+        tr
+          th Название
+          th Руководитель
+          th Действия
+      tbody
+        each d in departments
+          tr
+            td= d.department_name
+            td= d.manager_name || '—'
+            td.actions
+              if user.role === 'Администратор' || user.role === 'Модератор'
+                a.btn.btn-sm.btn-warning(href="/departments/" + d.id_department + "/edit") Изменить
+                form(action="/departments/" + d.id_department + "/delete" method="post" style="display:inline" onsubmit="return confirm('Удалить отдел?')")
+                  button.btn.btn-sm.btn-danger(type="submit") Удалить
+  else
+    p.empty-state Отделы не найдены.

@@ -1,0 +1,13 @@
+extends ../layout
+block content
+  .page-header
+    h1= title
+    a.btn.btn-secondary(href="/positions") ← Назад
+
+  form.edit-form(action=action method="post")
+    .form-group
+      label Название должности *
+      input(type="text" name="position_name" value=pos.position_name required placeholder="Менеджер")
+    .form-actions
+      button.btn.btn-primary(type="submit") Сохранить
+      a.btn.btn-secondary(href="/positions") Отмена

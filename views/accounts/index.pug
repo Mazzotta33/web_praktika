@@ -1,0 +1,41 @@
+extends ../layout
+block content
+  .page-header
+    h1 Учётные записи
+    a.btn.btn-primary(href="/accounts/new") + Создать запись
+
+  if accounts.length
+    table.data-table
+      thead
+        tr
+          th Логин
+          th Сотрудник
+          th Роль
+          th Статус
+          th Действия
+      tbody
+        each a in accounts
+          tr
+            td= a.login
+            td= a.full_name
+            td= a.role_name
+            td
+              if a.is_active
+                span.badge.badge-success Активна
+              else
+                span.badge.badge-danger Деактивирована
+            td.actions
+              if a.is_active
+                form(action="/accounts/" + a.id_account + "/deactivate" method="post" style="display:inline" onsubmit="return confirm('Деактивировать?')")
+                  button.btn.btn-sm.btn-warning(type="submit") Деактивировать
+              else
+                form(action="/accounts/" + a.id_account + "/activate" method="post" style="display:inline")
+                  button.btn.btn-sm.btn-success(type="submit") Активировать
+              form.role-form(action="/accounts/" + a.id_account + "/role" method="post" style="display:inline")
+                select(name="id_role")
+                  option(value="1" selected=(a.id_role==1)) Администратор
+                  option(value="2" selected=(a.id_role==2)) Модератор
+                  option(value="3" selected=(a.id_role==3)) Сотрудник
+                button.btn.btn-sm(type="submit") Сменить роль
+  else
+    p.empty-state Учётных записей нет.

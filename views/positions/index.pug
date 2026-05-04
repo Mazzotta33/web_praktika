@@ -1,0 +1,24 @@
+extends ../layout
+block content
+  .page-header
+    h1 Должности
+    if user.role === 'Администратор' || user.role === 'Модератор'
+      a.btn.btn-primary(href="/positions/new") + Добавить должность
+
+  if positions.length
+    table.data-table
+      thead
+        tr
+          th Название
+          th Действия
+      tbody
+        each p in positions
+          tr
+            td= p.position_name
+            td.actions
+              if user.role === 'Администратор' || user.role === 'Модератор'
+                a.btn.btn-sm.btn-warning(href="/positions/" + p.id_position + "/edit") Изменить
+                form(action="/positions/" + p.id_position + "/delete" method="post" style="display:inline" onsubmit="return confirm('Удалить должность?')")
+                  button.btn.btn-sm.btn-danger(type="submit") Удалить
+  else
+    p.empty-state Должности не найдены.

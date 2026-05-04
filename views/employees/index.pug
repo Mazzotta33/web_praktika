@@ -1,0 +1,58 @@
+extends ../layout
+block content
+  .page-header
+    h1 Справочник сотрудников
+    if user.role === 'Администратор' || user.role === 'Модератор'
+      a.btn.btn-primary(href="/employees/new") + Добавить сотрудника
+
+  form.search-form(method="get" action="/employees")
+    .search-row
+      .form-group
+        label Поиск по ФИО
+        input(type="text" name="name" value=filters.name placeholder="Введите ФИО")
+      .form-group
+        label Отдел
+        select(name="department")
+          option(value="") Все отделы
+          each d in departments
+            option(value=d.id_department selected=(filters.department == d.id_department))= d.department_name
+      .form-group
+        label Должность
+        select(name="position")
+          option(value="") Все должности
+          each p in positions
+            option(value=p.id_position selected=(filters.position == p.id_position))= p.position_name
+      .form-group.search-actions
+        button.btn.btn-primary(type="submit") Найти
+        a.btn.btn-secondary(href="/employees") Сбросить
+
+  p.result-count Найдено: #{employees.length} сотр.
+
+  if employees.length
+    table.data-table
+      thead
+        tr
+          th Таб. №
+          th ФИО
+          th Отдел
+          th Должность
+          th Телефон (раб.)
+          th Email
+          th Действия
+      tbody
+        each emp in employees
+          tr
+            td= emp.personnel_number
+            td: a(href="/employees/" + emp.id_employee)= emp.full_name
+            td= emp.department_name
+            td= emp.position_name
+            td= emp.phone_work || '—'
+            td= emp.email || '—'
+            td.actions
+              a.btn.btn-sm(href="/employees/" + emp.id_employee) Просмотр
+              if user.role === 'Администратор' || user.role === 'Модератор'
+                a.btn.btn-sm.btn-warning(href="/employees/" + emp.id_employee + "/edit") Изм.
+                form(action="/employees/" + emp.id_employee + "/delete" method="post" style="display:inline" onsubmit="return confirm('Удалить сотрудника?')")
+                  button.btn.btn-sm.btn-danger(type="submit") Удал.
+  else
+    p.empty-state Сотрудники не найдены. Попробуйте изменить критерии поиска.

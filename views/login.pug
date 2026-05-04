@@ -1,0 +1,22 @@
+doctype html
+html(lang="ru")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title Вход — Справочник сотрудников
+    link(rel="stylesheet" href="/css/style.css")
+  body.login-page
+    .login-box
+      h1.login-title Справочник сотрудников
+      if error && error.length
+        .flash.flash-error
+          each msg in error
+            p= msg
+      form(action="/login" method="post")
+        .form-group
+          label(for="login") Логин
+          input#login(type="text" name="login" required autofocus)
+        .form-group
+          label(for="password") Пароль
+          input#password(type="password" name="password" required)
+        button.btn.btn-primary(type="submit") Войти

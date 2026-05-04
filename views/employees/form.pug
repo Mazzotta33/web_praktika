@@ -1,0 +1,47 @@
+extends ../layout
+block content
+  .page-header
+    h1= title
+    a.btn.btn-secondary(href="/employees") ← Назад
+
+  form.edit-form(action=action method="post" enctype="multipart/form-data")
+    .form-group
+      label ФИО *
+      input(type="text" name="full_name" value=emp.full_name required placeholder="Иванов Иван Иванович")
+    .form-row
+      .form-group
+        label Отдел *
+        select(name="id_department" required)
+          option(value="") — Выберите отдел —
+          each d in departments
+            option(value=d.id_department selected=(emp.id_department == d.id_department))= d.department_name
+      .form-group
+        label Должность *
+        select(name="id_position" required)
+          option(value="") — Выберите должность —
+          each p in positions
+            option(value=p.id_position selected=(emp.id_position == p.id_position))= p.position_name
+    .form-row
+      .form-group
+        label Телефон (рабочий)
+        input(type="text" name="phone_work" value=emp.phone_work placeholder="+7-800-000-00-00")
+      .form-group
+        label Телефон (мобильный)
+        input(type="text" name="phone_mobile" value=emp.phone_mobile placeholder="+7-900-000-00-00")
+    .form-row
+      .form-group
+        label Email
+        input(type="email" name="email" value=emp.email placeholder="example@company.ru")
+      .form-group
+        label Кабинет
+        input(type="text" name="cabinet" value=emp.cabinet placeholder="101")
+    .form-group
+      label Фото
+      input(type="file" name="photo" accept="image/*")
+      if emp.photo
+        .current-photo
+          img(src=emp.photo alt="Текущее фото" style="max-height:80px;margin-top:6px")
+          small  (оставьте пустым, чтобы не менять)
+    .form-actions
+      button.btn.btn-primary(type="submit") Сохранить
+      a.btn.btn-secondary(href="/employees") Отмена

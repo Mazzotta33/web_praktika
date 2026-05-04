@@ -1,0 +1,19 @@
+extends ../layout
+block content
+  .page-header
+    h1= title
+    a.btn.btn-secondary(href="/departments") ← Назад
+
+  form.edit-form(action=action method="post")
+    .form-group
+      label Название отдела *
+      input(type="text" name="department_name" value=dept.department_name required placeholder="Отдел кадров")
+    .form-group
+      label Руководитель
+      select(name="manager_id")
+        option(value="") — Не назначен —
+        each e in employees
+          option(value=e.id_employee selected=(dept.manager_id == e.id_employee))= e.full_name
+    .form-actions
+      button.btn.btn-primary(type="submit") Сохранить
+      a.btn.btn-secondary(href="/departments") Отмена

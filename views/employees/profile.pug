@@ -1,0 +1,45 @@
+extends ../layout
+block content
+  .page-header
+    h1 Мой профиль
+
+  .card-view
+    .card-photo
+      if emp.photo
+        img(src=emp.photo alt="Фото" class="employee-photo")
+      else
+        .no-photo Нет фото
+
+  form.edit-form(action="/employees/profile" method="post" enctype="multipart/form-data")
+    .form-group
+      label ФИО
+      input(type="text" value=emp.full_name disabled)
+    .form-row
+      .form-group
+        label Отдел
+        input(type="text" value=emp.department_name disabled)
+      .form-group
+        label Должность
+        input(type="text" value=emp.position_name disabled)
+    .form-row
+      .form-group
+        label Телефон (рабочий)
+        input(type="text" name="phone_work" value=emp.phone_work placeholder="+7-800-000-00-00")
+      .form-group
+        label Телефон (мобильный)
+        input(type="text" name="phone_mobile" value=emp.phone_mobile placeholder="+7-900-000-00-00")
+    .form-row
+      .form-group
+        label Email
+        input(type="email" name="email" value=emp.email placeholder="example@company.ru")
+      .form-group
+        label Кабинет
+        input(type="text" name="cabinet" value=emp.cabinet placeholder="101")
+    .form-group
+      label Фото
+      input(type="file" name="photo" accept="image/*")
+      if emp.photo
+        .current-photo
+          img(src=emp.photo alt="Фото" style="max-height:80px;margin-top:6px")
+    .form-actions
+      button.btn.btn-primary(type="submit") Сохранить изменения

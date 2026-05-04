@@ -1,0 +1,42 @@
+extends ../layout
+block content
+  .page-header
+    h1= emp.full_name
+    .header-actions
+      a.btn.btn-secondary(href="/employees") ← Назад
+      if user.role === 'Администратор' || user.role === 'Модератор'
+        a.btn.btn-warning(href="/employees/" + emp.id_employee + "/edit") Редактировать
+
+  .card-view
+    .card-photo
+      if emp.photo
+        img(src=emp.photo alt="Фото" class="employee-photo")
+      else
+        .no-photo Нет фото
+    .card-info
+      table.info-table
+        tbody
+          tr
+            th Табельный номер
+            td= emp.personnel_number
+          tr
+            th ФИО
+            td= emp.full_name
+          tr
+            th Отдел
+            td= emp.department_name
+          tr
+            th Должность
+            td= emp.position_name
+          tr
+            th Телефон (рабочий)
+            td= emp.phone_work || '—'
+          tr
+            th Телефон (мобильный)
+            td= emp.phone_mobile || '—'
+          tr
+            th Email
+            td= emp.email || '—'
+          tr
+            th Кабинет
+            td= emp.cabinet || '—'
