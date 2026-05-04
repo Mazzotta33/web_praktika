@@ -5,9 +5,9 @@ const path = require('path');
 
 async function setup() {
   const conn = await mysql.createConnection({
-    host: 'localhost',
+    host: '127.0.0.1',
     user: 'root',
-    password: '',
+    password: 'root123',
     multipleStatements: true,
     charset: 'utf8mb4'
   });
