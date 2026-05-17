@@ -29,7 +29,7 @@ exports.create = async (req, res, next) => {
 
 exports.editForm = async (req, res, next) => {
   try {
-    const [dept, employees] = await Promise.all([Department.getById(req.params.id), Employee.getAll()]);
+    const [dept, employees] = await Promise.all([Department.getById(req.params.id), Employee.getAll({ department: req.params.id })]);
     if (!dept) { req.flash('error', 'Отдел не найден'); return res.redirect('/departments'); }
     res.render('departments/form', {
       title: 'Редактировать отдел', dept, employees,

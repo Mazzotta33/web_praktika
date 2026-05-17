@@ -1,6 +1,14 @@
 const Employee   = require('../models/Employee');
 const Department = require('../models/Department');
 const Position   = require('../models/Position');
+const fs   = require('fs');
+const path = require('path');
+
+function deleteOldPhoto(photoPath) {
+  if (!photoPath) return;
+  const abs = path.join(__dirname, '..', 'public', photoPath);
+  fs.unlink(abs, () => {});
+}
 
 exports.index = async (req, res, next) => {
   try {
@@ -68,8 +76,10 @@ exports.update = async (req, res, next) => {
     const emp = await Employee.getById(req.params.id);
     if (!emp) { req.flash('error', 'Сотрудник не найден'); return res.redirect('/employees'); }
     const data = { ...req.body };
-    if (req.file) data.photo = '/uploads/' + req.file.filename;
-    else data.photo = emp.photo;
+    if (req.file) {
+      deleteOldPhoto(emp.photo);
+      data.photo = '/uploads/' + req.file.filename;
+    } else data.photo = emp.photo;
     await Employee.update(req.params.id, data);
     req.flash('success', 'Данные обновлены');
     res.redirect('/employees/' + req.params.id);
@@ -78,6 +88,8 @@ exports.update = async (req, res, next) => {
 
 exports.delete = async (req, res, next) => {
   try {
+    const emp = await Employee.getById(req.params.id);
+    if (emp) deleteOldPhoto(emp.photo);
     await Employee.delete(req.params.id);
     req.flash('success', 'Сотрудник удалён');
     res.redirect('/employees');
@@ -97,10 +109,12 @@ exports.profileUpdate = async (req, res, next) => {
     const emp = await Employee.getById(req.session.user.id_employee);
     if (!emp) { req.flash('error', 'Профиль не найден'); return res.redirect('/employees'); }
     const data = { ...req.body };
-    if (req.file) data.photo = '/uploads/' + req.file.filename;
-    else data.photo = emp.photo;
+    if (req.file) {
+      deleteOldPhoto(emp.photo);
+      data.photo = '/uploads/' + req.file.filename;
+    } else data.photo = emp.photo;
     await Employee.updateProfile(req.session.user.id_employee, data);
     req.flash('success', 'Профиль обновлён');
-    res.redirect('/profile');
+    res.redirect('/employees/profile');
   } catch (err) { next(err); }
 };

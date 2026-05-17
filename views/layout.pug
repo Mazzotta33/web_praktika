@@ -17,7 +17,7 @@ html(lang="ru")
             li: a(href="/positions") Должности
           if user.role === 'Администратор'
             li: a(href="/accounts") Пользователи
-          li: a(href="/profile") Мой профиль
+          li: a(href="/employees/profile") Мой профиль
           li
             form(action="/logout" method="get" style="display:inline")
               button.btn-link(type="submit") Выйти (#{user.login})
