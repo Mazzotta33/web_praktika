@@ -24,6 +24,13 @@ class Account {
     return rows[0];
   }
 
+  static async findByEmployee(empId) {
+    const [rows] = await db.execute(
+      'SELECT login FROM accounts WHERE id_employee = ?', [empId]
+    );
+    return rows[0] || null;
+  }
+
   static async findByLogin(login) {
     const [rows] = await db.execute(`
       SELECT a.*, r.role_name, e.full_name, e.id_employee

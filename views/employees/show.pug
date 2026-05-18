@@ -7,6 +7,17 @@ block content
       if user.role === 'Администратор' || user.role === 'Модератор'
         a.btn.btn-warning(href="/employees/" + emp.id_employee + "/edit") Редактировать
 
+  if user.role === 'Администратор' && tempPassword
+    .credentials-box
+      p
+        strong Сотрудник создан. Сохраните данные для входа:
+      p Логин:&nbsp;
+        strong= tempLogin
+      p Временный пароль:&nbsp;
+        strong= tempPassword
+      p
+        em После копирования перейдите дальше — пароль больше не будет показан.
+
   .card-view
     .card-photo
       if emp.photo
@@ -40,3 +51,7 @@ block content
           tr
             th Кабинет
             td= emp.cabinet || '—'
+          if user.role === 'Администратор'
+            tr
+              th Логин
+              td= accountLogin || '—'

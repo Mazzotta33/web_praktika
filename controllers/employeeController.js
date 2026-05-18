@@ -1,6 +1,7 @@
 const Employee   = require('../models/Employee');
 const Department = require('../models/Department');
 const Position   = require('../models/Position');
+const Account    = require('../models/Account');
 const fs   = require('fs');
 const path = require('path');
 
@@ -30,28 +31,52 @@ exports.show = async (req, res, next) => {
   try {
     const emp = await Employee.getById(req.params.id);
     if (!emp) { req.flash('error', 'Сотрудник не найден'); return res.redirect('/employees'); }
-    res.render('employees/show', { title: emp.full_name, emp });
+    let tempPassword = null, tempLogin = null, accountLogin = null;
+    if (req.session.newEmpId == req.params.id) {
+      tempPassword = req.session.newEmpPassword;
+      tempLogin    = req.session.newEmpLogin;
+      delete req.session.newEmpPassword;
+      delete req.session.newEmpLogin;
+      delete req.session.newEmpId;
+    }
+    if (req.session.user.role === 'Администратор') {
+      const acc = await Account.findByEmployee(req.params.id);
+      accountLogin = acc ? acc.login : null;
+    }
+    res.render('employees/show', { title: emp.full_name, emp, tempPassword, tempLogin, accountLogin });
   } catch (err) { next(err); }
 };
 
 exports.createForm = async (req, res, next) => {
   try {
     const [departments, positions] = await Promise.all([Department.getAll(), Position.getAll()]);
-    res.render('employees/form', { title: 'Новый сотрудник', emp: {}, departments, positions, action: '/employees' });
+    res.render('employees/form', { title: 'Новый сотрудник', emp: {}, departments, positions, action: '/employees', isNew: true });
   } catch (err) { next(err); }
 };
 
 exports.create = async (req, res, next) => {
   try {
-    if (!req.body.full_name || !req.body.id_department || !req.body.id_position) {
-      req.flash('error', 'Заполните обязательные поля');
+    if (!req.body.full_name || !req.body.id_department || !req.body.id_position || !req.body.login) {
+      req.flash('error', 'Заполните обязательные поля (включая логин)');
       return res.redirect('/employees/new');
     }
     const data = { ...req.body };
     if (req.file) data.photo = '/uploads/' + req.file.filename;
-    await Employee.create(data);
-    req.flash('success', 'Сотрудник добавлен');
-    res.redirect('/employees');
+    const empId = await Employee.create(data);
+    try {
+      const { tempPassword } = await Account.create({ login: req.body.login, id_employee: empId, id_role: 3 });
+      req.session.newEmpPassword = tempPassword;
+      req.session.newEmpLogin    = req.body.login;
+      req.session.newEmpId       = empId;
+    } catch (accErr) {
+      await Employee.delete(empId);
+      if (accErr.code === 'ER_DUP_ENTRY') {
+        req.flash('error', 'Логин уже занят — выберите другой');
+        return res.redirect('/employees/new');
+      }
+      throw accErr;
+    }
+    res.redirect('/employees/' + empId);
   } catch (err) { next(err); }
 };
 
@@ -66,7 +91,8 @@ exports.editForm = async (req, res, next) => {
     res.render('employees/form', {
       title:   'Редактировать: ' + emp.full_name,
       emp, departments, positions,
-      action:  '/employees/' + emp.id_employee + '/update'
+      action:  '/employees/' + emp.id_employee + '/update',
+      isNew:   false
     });
   } catch (err) { next(err); }
 };
